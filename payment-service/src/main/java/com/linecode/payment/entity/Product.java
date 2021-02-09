@@ -29,7 +29,7 @@ import lombok.ToString;
 @EqualsAndHashCode
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "sale")
+@Table(name = "product")
 public class Product implements Serializable, MapperToDto<ProductDto> {
     
     private static final long serialVersionUID = 1L;
