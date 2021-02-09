@@ -8,8 +8,10 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.linecode.payment.dto.ProductDto;
 import com.linecode.payment.util.DateUtil;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -28,7 +30,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "sale")
-public class Product implements Serializable {
+public class Product implements Serializable, MapperToDto<ProductDto> {
     
     private static final long serialVersionUID = 1L;
 
@@ -42,4 +44,9 @@ public class Product implements Serializable {
     @Column(name = "last_modified_date")
     @DateTimeFormat(pattern = DateUtil.DEFAULT_FORMMAT)
     private Date lastModifiedDate;
+
+    @Override
+    public ProductDto convertToDto() {
+        return new ModelMapper().map(this, ProductDto.class);
+    }
 }

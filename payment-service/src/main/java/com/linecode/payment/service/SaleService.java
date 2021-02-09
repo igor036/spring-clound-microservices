@@ -1,7 +1,6 @@
 package com.linecode.payment.service;
 
 import com.linecode.payment.dto.SaleDto;
-import com.linecode.payment.entity.ProductSale;
 import com.linecode.payment.entity.Sale;
 import com.linecode.payment.exception.RestException;
 import com.linecode.payment.repository.SaleRepository;
@@ -18,7 +17,6 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 import static com.linecode.payment.util.ValidatorUtil.assertNotNull;
-import static com.linecode.payment.util.MapperUtil.convertTo;
 
 @Service
 public class SaleService {
@@ -36,15 +34,15 @@ public class SaleService {
         assertNotNull(saleDto.getProducts(), SALE_OBJECT_NULL_ERROR_MESSAGE);
         assertSaleTotalPrice(saleDto);
 
-        var createdSale = saleRepository.save(convertTo(saleDto, Sale.class));
-        return convertTo(createdSale, SaleDto.class);
+        var createdSale = saleRepository.save(saleDto.convertToEntity());
+        return createdSale.convertToDto();
     }
 
     public Page<SaleDto> findAll(int page, int limit, String direction) { 
         var pageable = gePageable(page, limit, direction);
         return saleRepository
             .findAll(pageable)
-            .map(sale -> convertTo(sale, SaleDto.class));
+            .map(Sale::convertToDto);
     }
 
 
@@ -56,7 +54,7 @@ public class SaleService {
             throw new RestException(HttpStatus.NOT_FOUND, SALE_NOT_FOUND_ERROR_MESSAGE);
         }
 
-        return convertTo(sale, SaleDto.class);
+        return sale.get().convertToDto();
     }
 
     private void assertSaleTotalPrice(SaleDto saleDto) {

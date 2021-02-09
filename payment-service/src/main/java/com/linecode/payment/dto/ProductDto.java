@@ -4,6 +4,10 @@ import java.io.Serializable;
 
 import javax.validation.constraints.Min;
 
+import com.linecode.payment.entity.Product;
+
+import org.modelmapper.ModelMapper;
+
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -15,11 +19,16 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class ProductDto implements Serializable {
+public class ProductDto implements Serializable, MapperToEntity<Product> {
     
     private static final long serialVersionUID = 1L;
 
     @Min(value = 1L, message = "Invalid product id.")
     private long id;
     private int amount;
+
+    @Override
+    public Product convertToEntity() {
+        return new ModelMapper().map(this, Product.class);
+    }
 }

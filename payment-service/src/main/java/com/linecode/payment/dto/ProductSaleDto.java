@@ -4,6 +4,10 @@ import java.io.Serializable;
 
 import javax.validation.constraints.Min;
 
+import com.linecode.payment.entity.ProductSale;
+
+import org.modelmapper.ModelMapper;
+
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -15,7 +19,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class ProductSaleDto implements Serializable {
+public class ProductSaleDto implements Serializable, MapperToEntity<ProductSale> {
 
     private static final long serialVersionUID = 1L;
 
@@ -33,6 +37,11 @@ public class ProductSaleDto implements Serializable {
 
     public double getTotal() {
         return price * amount;
+    }
+
+    @Override
+    public ProductSale convertToEntity() {
+        return new ModelMapper().map(this, ProductSale.class);
     }
 
 }

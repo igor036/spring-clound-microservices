@@ -13,8 +13,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.linecode.payment.dto.ProductSaleDto;
 import com.linecode.payment.util.DateUtil;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -33,7 +35,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "product_sale")
-public class ProductSale implements Serializable {
+public class ProductSale implements Serializable, MapperToDto<ProductSaleDto> {
 
     private static final long serialVersionUID = 1L;
 
@@ -58,5 +60,10 @@ public class ProductSale implements Serializable {
     @Column(name = "created_at")
     @DateTimeFormat(pattern = DateUtil.DEFAULT_FORMMAT)
     private Date createdAt;
+
+    @Override
+    public ProductSaleDto convertToDto() {
+        return new ModelMapper().map(this, ProductSaleDto.class);
+    }
 
 }

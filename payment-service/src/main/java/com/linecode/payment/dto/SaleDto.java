@@ -2,10 +2,15 @@ package com.linecode.payment.dto;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+
+import com.linecode.payment.entity.Sale;
+
+import org.modelmapper.ModelMapper;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -18,7 +23,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class SaleDto implements Serializable {
+public class SaleDto implements Serializable , MapperToEntity<Sale> {
 
     private static final long serialVersionUID = 1L;
     
@@ -30,5 +35,21 @@ public class SaleDto implements Serializable {
 
     @Min(value = 10, message = "The minimum total sale value is 10.")
     private double total;
+
+    @Override
+    public Sale convertToEntity() {
+        
+        var saleEntity = new ModelMapper().map(this, Sale.class);
+
+        //@formatter:off
+        var productsEntityList = products
+            .stream()
+            .map(ProductSaleDto::convertToEntity)
+            .collect(Collectors.toList());
+        //@formatter:on
+
+        saleEntity.setProducts(productsEntityList);
+        return saleEntity;
+    }
     
 }

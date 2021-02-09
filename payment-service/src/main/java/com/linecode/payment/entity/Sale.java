@@ -3,6 +3,7 @@ package com.linecode.payment.entity;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -14,8 +15,10 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import com.linecode.payment.dto.SaleDto;
 import com.linecode.payment.util.DateUtil;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -34,7 +37,7 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "sale")
-public class Sale implements Serializable {
+public class Sale implements Serializable, MapperToDto<SaleDto> {
 
     private static final long serialVersionUID = 1L;
 
@@ -52,5 +55,21 @@ public class Sale implements Serializable {
     @Column(name = "created_at")
     @DateTimeFormat(pattern = DateUtil.DEFAULT_FORMMAT)
     private Date createdAt;
+
+    @Override
+    public SaleDto convertToDto() {
+        
+        var saleDto = new ModelMapper().map(this, SaleDto.class);
+
+        //@formatter:off
+        var productDtoList = products
+            .stream()
+            .map(ProductSale::convertToDto)
+            .collect(Collectors.toList());
+        //@formatter:on
+
+        saleDto.setProducts(productDtoList);
+        return saleDto;
+    }
     
 }
