@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 import static com.linecode.payment.util.ValidatorUtil.assertNotNull;
+import static com.linecode.payment.util.ValidatorUtil.assertConstraints;
 
 @Service
 public class SaleService {
@@ -31,7 +32,7 @@ public class SaleService {
     public SaleDto create(SaleDto saleDto) {
 
         assertNotNull(saleDto, SALE_OBJECT_NULL_ERROR_MESSAGE);
-        assertNotNull(saleDto.getProducts(), SALE_OBJECT_NULL_ERROR_MESSAGE);
+        assertConstraints(saleDto);
         assertSaleTotalPrice(saleDto);
 
         var createdSale = saleRepository.save(saleDto.convertToEntity());
