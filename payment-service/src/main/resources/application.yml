@@ -1,1 +1,15 @@
+server:
+  port : 8081
 
+spring:
+
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3307/payment_service_dev_db
+    username: root
+    password: root
+
+  jpa:
+    hibernate.ddl-auto: update
+    generate-ddl: true
+    show-sql: true
