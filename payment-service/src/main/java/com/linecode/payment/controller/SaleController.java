@@ -35,12 +35,12 @@ public class SaleController {
         @RequestParam(defaultValue = "asc") String direction
     ) {
         var sales = saleService.findAll(page, limit, direction);
-        return ResponseEntity.ok(sales);
+        return ResponseEntity.status(HttpStatus.FOUND).body(sales);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<SaleDto> findAll(@PathVariable long id) {
+    public ResponseEntity<SaleDto> findById(@PathVariable long id) {
         var sale = saleService.findById(id);
-        return ResponseEntity.ok(sale);
+        return ResponseEntity.status(HttpStatus.FOUND).body(sale);
     }
 }

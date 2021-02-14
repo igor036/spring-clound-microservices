@@ -22,6 +22,8 @@ import static com.linecode.payment.util.ValidatorUtil.assertConstraints;
 @Service
 public class SaleService {
  
+
+    public static final String ELEMENTS_NOT_FOUND_ERROR_MESSAGE = "No elements found.";
     public static final String SALE_NOT_FOUND_ERROR_MESSAGE = "Sale not found.";
     public static final String SALE_OBJECT_NULL_ERROR_MESSAGE = "Please enter a sale data.";
     public static final String SALE_TOTAL_PRICE_ERROR_MESSAGE = "The total price sale is not valid, please, check products price and amount.";
@@ -40,10 +42,15 @@ public class SaleService {
     }
 
     public Page<SaleDto> findAll(int page, int limit, String direction) { 
+        
         var pageable = gePageable(page, limit, direction);
-        return saleRepository
-            .findAll(pageable)
-            .map(Sale::convertToDto);
+        var sales    = saleRepository.findAll(pageable).map(Sale::convertToDto);
+
+        if (sales.isEmpty()) {
+            throw new RestException(HttpStatus.NOT_FOUND, ELEMENTS_NOT_FOUND_ERROR_MESSAGE);
+        }
+
+        return sales;
     }
 
 
