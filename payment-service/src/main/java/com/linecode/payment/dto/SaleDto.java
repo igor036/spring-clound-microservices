@@ -13,6 +13,7 @@ import com.linecode.payment.entity.Sale;
 import org.modelmapper.ModelMapper;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
+@Builder
 public class SaleDto implements Serializable , MapperToEntity<Sale> {
 
     private static final long serialVersionUID = 1L;
