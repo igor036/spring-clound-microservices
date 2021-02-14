@@ -20,7 +20,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-@Builder
+@Builder(toBuilder=true)
 public class ProductSaleDto implements Serializable, MapperToEntity<ProductSale> {
 
     private static final long serialVersionUID = 1L;

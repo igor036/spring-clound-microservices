@@ -9,6 +9,7 @@ import com.linecode.payment.entity.Product;
 import org.modelmapper.ModelMapper;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
+@Builder(toBuilder=true)
 public class ProductDto implements Serializable, MapperToEntity<Product> {
     
     private static final long serialVersionUID = 1L;
