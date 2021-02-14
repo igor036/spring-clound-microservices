@@ -13,6 +13,7 @@ import com.linecode.payment.dto.ProductSaleDto;
 import com.linecode.payment.dto.SaleDto;
 import com.linecode.payment.exception.RestException;
 import com.linecode.payment.exception.UnprocessableEntityException;
+import com.linecode.payment.factory.SaleDtoFactory;
 import com.linecode.payment.repository.SaleRepository;
 import com.linecode.payment.service.SaleService;
 
@@ -79,16 +80,18 @@ public class SaleServiceUnitTest extends UnitTest {
     @DataProvider(name = "testCreateWithInvalidSaleDtoDataProvider")
     public Object[][] testCreateWithInvalidSaleDtoDataProvider() {
 
+        var saleDtoFactory = new SaleDtoFactory();
+
         var validProductSaleList        = Arrays.asList(new ProductSaleDto(1L, 1L, 2, 10d));
         var invalidProductSaleAmoutList = Arrays.asList(new ProductSaleDto(1L, 1L, 0, 10d));
         var invalidProductSalePriceList = Arrays.asList(new ProductSaleDto(1L, 1L, 1, 0d));
         
-        var nullProducts         = new SaleDto(1L, null, 10);
-        var emptyProducts        = new SaleDto(1L, Collections.emptyList(), 10);
-        var invalidMinTotal      = new SaleDto(1L, validProductSaleList, 5);
-        var invalidTotal         = new SaleDto(1L, validProductSaleList, 10);
-        var invalidProductAmount = new SaleDto(1L, invalidProductSaleAmoutList, 10);
-        var invalidProductPrice  = new SaleDto(1L, invalidProductSalePriceList, 10);
+        var nullProducts         = saleDtoFactory.buildFakeInstance().toBuilder().products(null).build();
+        var emptyProducts        = saleDtoFactory.buildFakeInstance().toBuilder().products(Collections.emptyList()).build();
+        var invalidMinTotal      = saleDtoFactory.buildFakeInstance().toBuilder().total(2d).build();
+        var invalidTotal         = saleDtoFactory.buildFakeInstance().toBuilder().products(validProductSaleList).total(10d).build();
+        var invalidProductAmount = saleDtoFactory.buildFakeInstance().toBuilder().products(invalidProductSaleAmoutList).build();
+        var invalidProductPrice  = saleDtoFactory.buildFakeInstance().toBuilder().products(invalidProductSalePriceList).build();
 
         //@formatter:off
         return new Object[][] {
