@@ -23,6 +23,8 @@ import java.util.Optional;
 @Service
 public class ProductService {
 
+
+    public static final String ELEMENTS_NOT_FOUND_ERROR_MESSAGE = "Elements not found.";
     public static final String PRODUCT_OBJECT_NULL_ERROR_MESSAGE = "Please enter a product.";
     public static final String PRODUCT_NAME_ALREADY_EXISTING = "%s already existing!";
     public static final String PRODUCT_NOT_FOUND = "Product not found";
@@ -68,9 +70,15 @@ public class ProductService {
 
     public Page<ProductDto> findAll(int page, int limit, String direction) {
         var pageable = gePageable(page, limit, direction);
-        return productRepository
+        var products = productRepository
             .findAll(pageable)
             .map(Product::convertToProductDTO);
+
+        if (products.isEmpty()) {
+            throw new RestException(HttpStatus.NOT_FOUND, ELEMENTS_NOT_FOUND_ERROR_MESSAGE);
+        }
+
+        return products;
 
     }
 

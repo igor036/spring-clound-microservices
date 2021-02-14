@@ -16,6 +16,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Map;
 
@@ -107,11 +108,9 @@ public class ProductControllerIntegrationTest extends IntegrationTest {
         var updateUrl  = buildUpdateProducUrl(product.getId());
         var response   = restTemplate.exchange(updateUrl, HttpMethod.DELETE, null, ProductDto.class);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-
-        var expectedResponse = product.convertToProductDTO();
-        assertEquals(expectedResponse, response.getBody());
-
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertTrue(productRepository.findById(product.getId()).isEmpty());
+        
     }
 
     @Test
@@ -132,7 +131,7 @@ public class ProductControllerIntegrationTest extends IntegrationTest {
         var updateUrl  = buildUpdateProducUrl(product.getId());
         var response   = restTemplate.exchange(updateUrl, HttpMethod.GET, null, ProductDto.class);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.FOUND, response.getStatusCode());
 
         var expectedResponse = product.convertToProductDTO();
         assertEquals(expectedResponse, response.getBody());
@@ -155,7 +154,7 @@ public class ProductControllerIntegrationTest extends IntegrationTest {
         PRODUCT_FACTORY.buildFakeInstance(12).forEach(productRepository::save);
         
         var firstPageResponse = restTemplate.exchange(PRODUCT_CONTROLLER_URL, HttpMethod.GET, null, Map.class);
-        assertEquals(HttpStatus.OK, firstPageResponse.getStatusCode());
+        assertEquals(HttpStatus.FOUND, firstPageResponse.getStatusCode());
 
         var firstPage = firstPageResponse.getBody();
         assertEquals(2, firstPage.get("totalPages"));
@@ -166,7 +165,7 @@ public class ProductControllerIntegrationTest extends IntegrationTest {
         assertEquals(false, firstPage.get("last"));
 
         var lastPageResponse = restTemplate.exchange(PRODUCT_CONTROLLER_URL+"?page=1", HttpMethod.GET, null, Map.class);
-        assertEquals(HttpStatus.OK, lastPageResponse.getStatusCode());
+        assertEquals(HttpStatus.FOUND, lastPageResponse.getStatusCode());
 
         var lastPage = lastPageResponse.getBody();
         assertEquals(2, lastPage.get("totalPages"));
@@ -175,6 +174,10 @@ public class ProductControllerIntegrationTest extends IntegrationTest {
         assertEquals(2, lastPage.get("numberOfElements"));
         assertEquals(false, lastPage.get("first"));
         assertEquals(true, lastPage.get("last"));
+
+        var noElementsFound = restTemplate.exchange(PRODUCT_CONTROLLER_URL+"?page=10", HttpMethod.GET, null, String.class);
+        assertEquals(HttpStatus.NOT_FOUND, noElementsFound.getStatusCode());
+        assertEquals(ProductService.ELEMENTS_NOT_FOUND_ERROR_MESSAGE, noElementsFound.getBody());
     }
 
     private static String buildUpdateProducUrl(long productId) {

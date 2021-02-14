@@ -39,7 +39,7 @@ public class ProductController {
     @DeleteMapping("{id}")
     public ResponseEntity<ProductDto> delete(@PathVariable long id) {
         var productResponse = productService.delete(id);
-        return ResponseEntity.ok(productResponse);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(productResponse);
     }
 
     @GetMapping
@@ -49,12 +49,12 @@ public class ProductController {
         @RequestParam(defaultValue = "asc") String direction
     ) {
         var products = productService.findAll(page, limit, direction);
-        return ResponseEntity.ok(products);
+        return ResponseEntity.status(HttpStatus.FOUND).body(products);
     }
 
     @GetMapping("{id}")
     public ResponseEntity<ProductDto> findById(@PathVariable long id) {
-        var product = productService.findById(id);
-        return ResponseEntity.ok(product);
+        var productResponse = productService.findById(id);
+        return ResponseEntity.status(HttpStatus.FOUND).body(productResponse);
     }
 }
