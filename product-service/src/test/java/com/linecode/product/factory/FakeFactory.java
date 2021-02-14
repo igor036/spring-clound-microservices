@@ -3,7 +3,11 @@ package com.linecode.product.factory;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.github.javafaker.Faker;
+
 public interface FakeFactory <T> {
+
+    static final Faker FAKER = new Faker();
 
     T buildFakeInstance();
 

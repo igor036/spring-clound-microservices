@@ -12,6 +12,7 @@ import com.linecode.product.dto.ProductDto;
 import com.linecode.product.entity.Product;
 import com.linecode.product.exception.RestException;
 import com.linecode.product.exception.UnprocessableEntityException;
+import com.linecode.product.factory.ProductDtoFactory;
 import com.linecode.product.repository.ProductRepository;
 import com.linecode.product.service.ProductService;
 
@@ -149,13 +150,15 @@ public class ProductServiceUnitTest extends UnitTest {
     @DataProvider(name = "invalidProductRequestDataProvider")
     public Object[][] invalidProductRequestDataProvider() {
 
-        var emptyName     = new ProductDto(1L, "", 1, 10d);
-        var nullName      = new ProductDto(1L, null, 1, 10d);
-        var smallName     = new ProductDto(1L, "a", 1, 10d);
-        var longName      = new ProductDto(1L, "a".repeat(256), 1, 10d);
-        var invalidamount = new ProductDto(1L, "a".repeat(10), -1, 10);
-        var invalidPrice  = new ProductDto(1L, "a".repeat(10), 1, 0);
-        var allInvalid    = new ProductDto(1L, "", -1, 0);
+        var productDtoFactory = new ProductDtoFactory();
+
+        var emptyName     = productDtoFactory.buildFakeInstance().toBuilder().name("").build();
+        var nullName      = productDtoFactory.buildFakeInstance().toBuilder().name(null).build();
+        var smallName     = productDtoFactory.buildFakeInstance().toBuilder().name("a").build();
+        var longName      = productDtoFactory.buildFakeInstance().toBuilder().name("a".repeat(256)).build();
+        var invalidamount = productDtoFactory.buildFakeInstance().toBuilder().amount(-1).build();
+        var invalidPrice  = productDtoFactory.buildFakeInstance().toBuilder().price(0).build();
+        var allInvalid    = productDtoFactory.buildFakeInstance().toBuilder().name("").amount(-1).price(0).build();
 
         //@formatter:off
         return new Object[][] {
@@ -173,9 +176,7 @@ public class ProductServiceUnitTest extends UnitTest {
     @DataProvider(name = "validProductRequestDataProvider")
     public Object[][] validProductRequestDataProvider() { 
         //@formatter:off
-        return new Object[][] {
-            {new ProductDto(1L, "a".repeat(10), 1, 10d)}
-        };
+        return new Object[][] {{ new ProductDtoFactory().buildFakeInstance() }};
         //@formatter:on
     }
 

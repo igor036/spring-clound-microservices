@@ -19,6 +19,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,6 +31,7 @@ import lombok.Setter;
 @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder(toBuilder = true)
 @Table(name = "product")
 public class Product implements Serializable {
 
