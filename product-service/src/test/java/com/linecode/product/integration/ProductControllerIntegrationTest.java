@@ -1,5 +1,6 @@
 package com.linecode.product.integration;
 
+import com.linecode.product.amqp.ProductProducer;
 import com.linecode.product.dto.ProductDto;
 import com.linecode.product.entity.Product;
 import com.linecode.product.factory.ProductDtoFactory;
@@ -11,14 +12,27 @@ import javax.annotation.Resource;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.core.Appender;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.Map;
 
@@ -35,11 +49,21 @@ public class ProductControllerIntegrationTest extends IntegrationTest {
 
     @MockBean(name = "rabbitTemplate")
     private RabbitTemplate rabbitTemplate;
+    
+    @Mock
+    private Appender<ILoggingEvent> appender;
+
+    @Captor
+    private ArgumentCaptor<LoggingEvent> loggingEventCaptor;
 
 
     @Before
     public void clearProducts() {
+        MockitoAnnotations.openMocks(this);
         productRepository.deleteAll();
+        var root = (Logger) LoggerFactory.getLogger(ProductProducer.class);
+        root.addAppender(appender);
+        root.setLevel(Level.INFO);
     }
 
     @Test
@@ -49,6 +73,8 @@ public class ProductControllerIntegrationTest extends IntegrationTest {
         var httpEntity = new HttpEntity<>(productDto);
         var response   = restTemplate.exchange(PRODUCT_CONTROLLER_URL, HttpMethod.PUT, httpEntity, ProductDto.class);
 
+        verify(appender, times(1)).doAppend(loggingEventCaptor.capture());
+        assertProductProducerLogger(ProductProducer.CREATE_LOG_MESSAGE);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
         productDto.setId(response.getBody().getId());
@@ -80,6 +106,8 @@ public class ProductControllerIntegrationTest extends IntegrationTest {
         var httpEntity = new HttpEntity<>(productDto);
         var response   = restTemplate.exchange(updateUrl, HttpMethod.POST, httpEntity, ProductDto.class);
         
+        verify(appender, times(1)).doAppend(loggingEventCaptor.capture());
+        assertProductProducerLogger(ProductProducer.UPDATE_LOG_MESSAGE);
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
         product = productRepository.findById(productId).get();
@@ -113,6 +141,8 @@ public class ProductControllerIntegrationTest extends IntegrationTest {
         var updateUrl  = buildUpdateProductUrl(product.getId());
         var response   = restTemplate.exchange(updateUrl, HttpMethod.DELETE, null, ProductDto.class);
 
+        verify(appender, times(1)).doAppend(loggingEventCaptor.capture());
+        assertProductProducerLogger(ProductProducer.DELETE_LOG_MESSAGE);
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
         assertTrue(productRepository.findById(product.getId()).isEmpty());
         
@@ -185,7 +215,13 @@ public class ProductControllerIntegrationTest extends IntegrationTest {
         assertEquals(ProductService.ELEMENTS_NOT_FOUND_ERROR_MESSAGE, noElementsFound.getBody());
     }
 
-    private static String buildUpdateProductUrl(long productId) {
+    private void assertProductProducerLogger(String message) {
+        LoggingEvent loggingEvent = loggingEventCaptor.getAllValues().get(0);
+        assertEquals(message, loggingEvent.getMessage());
+        assertEquals(Level.INFO, loggingEvent.getLevel());
+    }
+
+    private String buildUpdateProductUrl(long productId) {
         return new StringBuilder()
         .append(PRODUCT_CONTROLLER_URL)
         .append("/")
@@ -193,7 +229,7 @@ public class ProductControllerIntegrationTest extends IntegrationTest {
         .toString();
     }
 
-    private static void assertProductNameAlreadyExisting(String productName, String message) {
+    private void assertProductNameAlreadyExisting(String productName, String message) {
         var expectedMessage = String.format(ProductService.PRODUCT_NAME_ALREADY_EXISTING, productName);
         assertEquals(expectedMessage, message);
     }
