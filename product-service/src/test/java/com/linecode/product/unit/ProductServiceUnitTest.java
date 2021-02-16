@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Optional;
 
+import com.linecode.product.amqp.ProductProducer;
 import com.linecode.product.dto.ProductDto;
 import com.linecode.product.entity.Product;
 import com.linecode.product.exception.RestException;
@@ -35,11 +36,16 @@ public class ProductServiceUnitTest extends UnitTest {
     @Mock(name = "productRepository")
     private ProductRepository productRepository;
 
+    @Mock(name = "productProducer")
+    private ProductProducer productProducer;
+
     @BeforeMethod
     private void initMock() {
         MockitoAnnotations.openMocks(this);
         productRepository = mock(ProductRepository.class);
-        ReflectionTestUtils.setField(productService, "productRepository",productRepository);
+        productProducer   = mock(ProductProducer.class);
+        ReflectionTestUtils.setField(productService, "productRepository", productRepository);
+        ReflectionTestUtils.setField(productService, "productProducer", productProducer);
     }
 
     @Test
