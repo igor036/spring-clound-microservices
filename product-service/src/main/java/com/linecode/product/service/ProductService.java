@@ -1,5 +1,6 @@
 package com.linecode.product.service;
 
+import com.linecode.product.amqp.ProductProducer;
 import com.linecode.product.dto.ProductDto;
 import com.linecode.product.entity.Product;
 import com.linecode.product.exception.RestException;
@@ -32,14 +33,20 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private ProductProducer productProducer;
+
     public ProductDto create(ProductDto productDto) {
 
         assertNotNull(productDto, PRODUCT_OBJECT_NULL_ERROR_MESSAGE);
         assertConstraints(productDto);
 
         var product = save(productDto.convertToProduct());
-
-        return product.convertToProductDTO();
+        var message = product.convertToProductMessageDTO();
+        productDto  = product.convertToProductDTO(); 
+        
+        productProducer.sendCreateProductMessage(message);
+        return productDto;
     }
 
     public ProductDto update(long id, ProductDto productDto) {
@@ -53,14 +60,23 @@ public class ProductService {
         product.setPrice(productDto.getPrice());
         product.setAmount(productDto.getAmount());
 
-        product = save(product);
-        return product.convertToProductDTO();
+        product     = save(product);
+        productDto  = product.convertToProductDTO(); 
+        var message = product.convertToProductMessageDTO();
+
+        productProducer.sendUpdateProductMessage(message);
+        return productDto;
     }
 
     public ProductDto delete(long id) { 
-        var product = get(id);
+        
+        var product    = get(id);
+        var productDto = product.convertToProductDTO();
+
         productRepository.delete(product);
-        return product.convertToProductDTO();
+        productProducer.sendDeleteProductMessage(id);
+
+        return productDto;
     }
 
     public ProductDto findById(long id) {

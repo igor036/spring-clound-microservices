@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import com.linecode.product.dto.ProductDto;
+import com.linecode.product.dto.ProductMessageDto;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.annotation.CreatedDate;
@@ -60,5 +61,9 @@ public class Product implements Serializable {
 
     public ProductDto convertToProductDTO() {
         return new ModelMapper().map(this, ProductDto.class);
+    }
+
+    public ProductMessageDto convertToProductMessageDTO() {
+        return new ModelMapper().map(this, ProductMessageDto.class);
     }
 }
