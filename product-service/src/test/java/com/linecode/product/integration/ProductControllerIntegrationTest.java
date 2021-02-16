@@ -11,6 +11,8 @@ import javax.annotation.Resource;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -31,6 +33,9 @@ public class ProductControllerIntegrationTest extends IntegrationTest {
     @Resource
     private ProductRepository productRepository;
 
+    @MockBean(name = "rabbitTemplate")
+    private RabbitTemplate rabbitTemplate;
+
 
     @Before
     public void clearProducts() {
@@ -41,8 +46,8 @@ public class ProductControllerIntegrationTest extends IntegrationTest {
     public void testCreateProductWithSuccess() {
 
         var productDto = PRODUCT_DTO_FACTORY.buildFakeInstance();
-        var httpEntity     = new HttpEntity<>(productDto);
-        var response       = restTemplate.exchange(PRODUCT_CONTROLLER_URL, HttpMethod.PUT, httpEntity, ProductDto.class);
+        var httpEntity = new HttpEntity<>(productDto);
+        var response   = restTemplate.exchange(PRODUCT_CONTROLLER_URL, HttpMethod.PUT, httpEntity, ProductDto.class);
 
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
 
@@ -60,20 +65,20 @@ public class ProductControllerIntegrationTest extends IntegrationTest {
         var response   = restTemplate.exchange(PRODUCT_CONTROLLER_URL, HttpMethod.PUT, httpEntity, String.class);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertProductNameAlrearyExisting(productDto.getName(), response.getBody());
+        assertProductNameAlreadyExisting(productDto.getName(), response.getBody());
     }
 
 
     @Test
     public void testUpdateProductWithSuccess() {
         
-        var product        = PRODUCT_FACTORY.buildFakeInstance();
-        var productId      = productRepository.save(product).getId();
-        var updateUrl      = buildUpdateProducUrl(productId);
-        
+        var product    = PRODUCT_FACTORY.buildFakeInstance();
+        var productId  = productRepository.save(product).getId();
+        var updateUrl  = buildUpdateProductUrl(productId);
+
         var productDto = PRODUCT_DTO_FACTORY.buildFakeInstance();
-        var httpEntity     = new HttpEntity<>(productDto);
-        var response       = restTemplate.exchange(updateUrl, HttpMethod.POST, httpEntity, ProductDto.class);
+        var httpEntity = new HttpEntity<>(productDto);
+        var response   = restTemplate.exchange(updateUrl, HttpMethod.POST, httpEntity, ProductDto.class);
         
         assertEquals(HttpStatus.OK, response.getStatusCode());
 
@@ -89,7 +94,7 @@ public class ProductControllerIntegrationTest extends IntegrationTest {
         
         var existingProductName = productRepository.save(PRODUCT_FACTORY.buildFakeInstance()).getName();
         var updateProductId     = productRepository.save(PRODUCT_FACTORY.buildFakeInstance()).getId();
-        var updateUrl           = buildUpdateProducUrl(updateProductId);
+        var updateUrl           = buildUpdateProductUrl(updateProductId);
 
         var productDto = PRODUCT_DTO_FACTORY.buildFakeInstance();
         productDto.setName(existingProductName);
@@ -98,14 +103,14 @@ public class ProductControllerIntegrationTest extends IntegrationTest {
         var response   = restTemplate.exchange(updateUrl, HttpMethod.POST, httpEntity, String.class);
         
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertProductNameAlrearyExisting(existingProductName, response.getBody());
+        assertProductNameAlreadyExisting(existingProductName, response.getBody());
     }
 
     @Test
     public void testDeleteWithSuccess() {
 
         var product    = productRepository.save(PRODUCT_FACTORY.buildFakeInstance());
-        var updateUrl  = buildUpdateProducUrl(product.getId());
+        var updateUrl  = buildUpdateProductUrl(product.getId());
         var response   = restTemplate.exchange(updateUrl, HttpMethod.DELETE, null, ProductDto.class);
 
         assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
@@ -116,7 +121,7 @@ public class ProductControllerIntegrationTest extends IntegrationTest {
     @Test
     public void testDeleteNonExistingProduct() {
 
-        var updateUrl  = buildUpdateProducUrl(10000L);
+        var updateUrl  = buildUpdateProductUrl(10000L);
         var response   = restTemplate.exchange(updateUrl, HttpMethod.DELETE, null, String.class);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -128,7 +133,7 @@ public class ProductControllerIntegrationTest extends IntegrationTest {
     public void testFindByIdWithSuccess() {
 
         var product    = productRepository.save(PRODUCT_FACTORY.buildFakeInstance());
-        var updateUrl  = buildUpdateProducUrl(product.getId());
+        var updateUrl  = buildUpdateProductUrl(product.getId());
         var response   = restTemplate.exchange(updateUrl, HttpMethod.GET, null, ProductDto.class);
 
         assertEquals(HttpStatus.FOUND, response.getStatusCode());
@@ -140,7 +145,7 @@ public class ProductControllerIntegrationTest extends IntegrationTest {
     @Test
     public void testFindByIdNonExistingProduct() {
 
-        var updateUrl  = buildUpdateProducUrl(10000L);
+        var updateUrl  = buildUpdateProductUrl(10000L);
         var response   = restTemplate.exchange(updateUrl, HttpMethod.GET, null, String.class);
 
         assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -180,7 +185,7 @@ public class ProductControllerIntegrationTest extends IntegrationTest {
         assertEquals(ProductService.ELEMENTS_NOT_FOUND_ERROR_MESSAGE, noElementsFound.getBody());
     }
 
-    private static String buildUpdateProducUrl(long productId) {
+    private static String buildUpdateProductUrl(long productId) {
         return new StringBuilder()
         .append(PRODUCT_CONTROLLER_URL)
         .append("/")
@@ -188,7 +193,7 @@ public class ProductControllerIntegrationTest extends IntegrationTest {
         .toString();
     }
 
-    private static void assertProductNameAlrearyExisting(String productName, String message) {
+    private static void assertProductNameAlreadyExisting(String productName, String message) {
         var expectedMessage = String.format(ProductService.PRODUCT_NAME_ALREADY_EXISTING, productName);
         assertEquals(expectedMessage, message);
     }
