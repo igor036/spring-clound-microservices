@@ -14,6 +14,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
@@ -21,6 +22,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @EqualsAndHashCode
 @Builder(toBuilder=true)
+@ToString
 public class ProductDto implements Serializable, MapperToEntity<Product> {
     
     private static final long serialVersionUID = 1L;
