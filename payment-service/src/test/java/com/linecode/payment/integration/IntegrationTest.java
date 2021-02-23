@@ -21,7 +21,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 @DirtiesContext(classMode = ClassMode.BEFORE_EACH_TEST_METHOD)
 public abstract class IntegrationTest {
 
+    protected static final String FAIL_MESSAGE = "Didn't throw expected exception";
+    
     @Autowired
     protected TestRestTemplate restTemplate;
-    
+
 }

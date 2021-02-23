@@ -44,7 +44,7 @@ public class SaleControllerIntegrationTest extends IntegrationTest {
     public void testCreateWithInvalidTotal() {
 
         var saleDto = SALE_DTO_FACTORY.buildFakeInstance();
-        saleDto.setTotal(saleDto.getTotal() + 10d);
+        saleDto.setTotal(30d);
 
         var httpEntity = new HttpEntity<>(saleDto);
         var response   = restTemplate.exchange(SALE_CONTROLLER_URL, HttpMethod.PUT, httpEntity, String.class);
