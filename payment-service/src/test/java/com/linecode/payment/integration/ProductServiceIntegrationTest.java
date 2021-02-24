@@ -13,6 +13,7 @@ import com.linecode.payment.factory.ProductDtoFactory;
 import com.linecode.payment.repository.ProductRepository;
 import com.linecode.payment.service.ProductService;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,6 +26,11 @@ public class ProductServiceIntegrationTest extends IntegrationTest {
 
     @Resource
     private ProductRepository productRepository;
+
+    @Before
+    public void clearProducts() {
+        productRepository.deleteAll();
+    }
 
     @Test
     public void testCreateWithSuccess() {

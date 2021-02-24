@@ -3,6 +3,7 @@ package com.linecode.payment.integration;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -11,10 +12,13 @@ import javax.annotation.Resource;
 
 import com.linecode.payment.dto.ProductSaleDto;
 import com.linecode.payment.dto.SaleDto;
+import com.linecode.payment.entity.Product;
 import com.linecode.payment.factory.SaleDtoFactory;
+import com.linecode.payment.repository.ProductRepository;
 import com.linecode.payment.repository.SaleRepository;
 import com.linecode.payment.service.SaleService;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -28,10 +32,33 @@ public class SaleControllerIntegrationTest extends IntegrationTest {
     @Resource
     private SaleRepository saleRepository;
 
+    @Resource
+    private ProductRepository productRepository;
+
+    @Before
+    public void clearRepositories() {
+        saleRepository.deleteAll();
+        productRepository.deleteAll();
+    }
+
     @Test
     public void testCreateWithSuccess() {
 
-        var saleDto    = SALE_DTO_FACTORY.buildFakeInstance();
+        //@formatter:off
+        var product = productRepository.save(Product.builder()
+            .id(1L).amount(10)
+            .build()
+        );
+
+        var productSale = ProductSaleDto.builder()
+            .productId(product.getId()).amount(1)
+            .price(10).build();
+
+        var saleDto = SaleDto.builder().total(10)
+            .products(Arrays.asList(productSale))
+            .build();
+        //@formatter:on
+
         var httpEntity = new HttpEntity<>(saleDto);
         var response   = restTemplate.exchange(SALE_CONTROLLER_URL, HttpMethod.PUT, httpEntity, SaleDto.class);
 
@@ -43,14 +70,74 @@ public class SaleControllerIntegrationTest extends IntegrationTest {
     @Test
     public void testCreateWithInvalidTotal() {
 
-        var saleDto = SALE_DTO_FACTORY.buildFakeInstance();
-        saleDto.setTotal(30d);
+        //@formatter:off
+        var product = productRepository.save(Product.builder()
+            .id(1L).amount(10)
+            .build()
+        );
+
+        var productSale = ProductSaleDto.builder()
+            .productId(product.getId()).amount(1)
+            .price(10).build();
+
+        var saleDto = SaleDto.builder().total(50d)
+            .products(Arrays.asList(productSale))
+            .build();
+        //@formatter:on
 
         var httpEntity = new HttpEntity<>(saleDto);
         var response   = restTemplate.exchange(SALE_CONTROLLER_URL, HttpMethod.PUT, httpEntity, String.class);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
         assertEquals(SaleService.SALE_TOTAL_PRICE_ERROR_MESSAGE, response.getBody());
+    }
+
+    @Test
+    public void testCreateWithWithoutInventory() {
+
+        //@formatter:off
+        var product = productRepository.save(Product.builder()
+            .id(1L).amount(0)
+            .build()
+        );
+
+        var productSale = ProductSaleDto.builder()
+            .productId(product.getId()).amount(10)
+            .price(10).build();
+
+        var saleDto = SaleDto.builder().total(100d)
+            .products(Arrays.asList(productSale))
+            .build();
+        //@formatter:on
+        
+        var httpEntity      = new HttpEntity<>(saleDto);
+        var response        = restTemplate.exchange(SALE_CONTROLLER_URL, HttpMethod.PUT, httpEntity, String.class);
+        var expectedMessage = String.format(SaleService.AMOUNT_LARGER_THAN_INVENTORY_ERROR_MESSAGE, "1");
+
+        assertEquals(HttpStatus.FORBIDDEN, response.getStatusCode());
+        assertEquals(expectedMessage, response.getBody());
+
+    }
+
+    @Test
+    public void testCreateWithNonExistingProduct() {
+
+        //@formatter:off
+        var productSale = ProductSaleDto.builder()
+            .productId(1L).amount(10)
+            .price(10).build();
+
+        var saleDto = SaleDto.builder().total(100d)
+            .products(Arrays.asList(productSale))
+            .build();
+        //@formatter:on
+        
+        var httpEntity = new HttpEntity<>(saleDto);
+        var response   = restTemplate.exchange(SALE_CONTROLLER_URL, HttpMethod.PUT, httpEntity, String.class);
+        var message    = String.format(SaleService.PRODUCT_NOT_FOUND_ERROR_MESSAGE, "1");
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals(message, response.getBody());
     }
 
     @Test

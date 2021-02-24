@@ -1,7 +1,10 @@
 package com.linecode.payment.unit;
 
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
@@ -11,9 +14,11 @@ import java.util.Optional;
 
 import com.linecode.payment.dto.ProductSaleDto;
 import com.linecode.payment.dto.SaleDto;
+import com.linecode.payment.entity.Product;
 import com.linecode.payment.exception.RestException;
 import com.linecode.payment.exception.UnprocessableEntityException;
 import com.linecode.payment.factory.SaleDtoFactory;
+import com.linecode.payment.repository.ProductRepository;
 import com.linecode.payment.repository.SaleRepository;
 import com.linecode.payment.service.SaleService;
 
@@ -34,11 +39,19 @@ public class SaleServiceUnitTest extends UnitTest {
     @Mock(name = "saleRepository")
     private SaleRepository saleRepository;
 
+    @Mock(name = "productRepository")
+    private ProductRepository productRepository;
+
     @BeforeMethod
     private void initMock() {
+
         MockitoAnnotations.openMocks(this);
-        saleRepository = mock(SaleRepository.class);
+        
+        saleRepository    = mock(SaleRepository.class);
+        productRepository = mock(ProductRepository.class);
+
         ReflectionTestUtils.setField(saleService, "saleRepository",saleRepository);
+        ReflectionTestUtils.setField(saleService, "productRepository",productRepository);
     }
 
     @Test
@@ -51,8 +64,80 @@ public class SaleServiceUnitTest extends UnitTest {
         }
     }
 
+    @Test
+    public void testCreateWithWithoutInventory() {
+
+        var mockProduct  = new Product(1L, 0, null);
+        var mockOptional = Optional.<Product>of(mockProduct);
+
+        //@formatter:off
+        doReturn(mockOptional)
+            .when(productRepository)
+            .findById(anyLong());
+        //@formatter:on
+
+        try {
+
+            //@formatter:off
+            var productSaleDto = ProductSaleDto.builder()
+                .id(1L).productId(1L)
+                .amount(1).price(10)
+                .build();
+                
+            var saleDto = SaleDto.builder()
+                .total(10d).products(Arrays.asList(productSaleDto))
+                .build();
+            //@formatter:on
+
+            saleService.create(saleDto);
+            fail(FAIL_MESSAGE);
+
+        } catch (RestException ex) {
+            var message = String.format(SaleService.AMOUNT_LARGER_THAN_INVENTORY_ERROR_MESSAGE, "1");
+            assertException(ex, HttpStatus.FORBIDDEN, message);
+        }
+
+    }
+
+    @Test
+    public void testCreateWithNonExistingProduct() {
+
+        var mockOptional = Optional.<Product>empty();
+
+        //@formatter:off
+        doReturn(mockOptional)
+            .when(productRepository)
+            .findById(anyLong());
+        //@formatter:on
+
+        try {
+
+            //@formatter:off
+            var productSaleDto = ProductSaleDto.builder()
+                .id(1L).productId(1L)
+                .amount(1).price(10)
+                .build();
+                
+            var saleDto = SaleDto.builder()
+                .total(10d).products(Arrays.asList(productSaleDto))
+                .build();
+            //@formatter:on
+
+            saleService.create(saleDto);
+            fail(FAIL_MESSAGE);
+
+        } catch (RestException ex) {
+            var message = String.format(SaleService.PRODUCT_NOT_FOUND_ERROR_MESSAGE, "1");
+            assertException(ex, HttpStatus.NOT_FOUND, message);
+        }
+
+    }
+
     @Test(dataProvider = "testCreateWithInvalidSaleDtoDataProvider")
-    public void testCreateWithInvalidSaleDtoDataProvider(SaleDto sale, Collection<String> invalidFields) {
+    public void testCreateWithInvalidSaleDto(SaleDto sale, Collection<String> invalidFields) {
+
+        reset(productRepository);
+
         try {
             saleService.create(sale);
             fail(FAIL_MESSAGE);
