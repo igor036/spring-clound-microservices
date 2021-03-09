@@ -18,7 +18,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfigure extends WebSecurityConfigurerAdapter {
     
-    private static final String LOGIN_END_POINT = "/auth";
+    private static final String LOGIN_END_POINT = "/user/auth";
 
     @Autowired
     private JwtTokenService jwtTokenService;
