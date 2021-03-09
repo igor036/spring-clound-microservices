@@ -15,7 +15,12 @@ spring:
     show-sql: true
 
 security:
-    jwt: 
-      token: 
-        secret-key: GWEFMlbWvVHYZw2qVNs946e7SWMaL9Ll
-        expire-timeout: 360000
+  jwt: 
+    token: 
+      secret-key: GWEFMlbWvVHYZw2qVNs946e7SWMaL9Ll
+      expire-timeout: 360000
+
+admin:
+  username: admin
+  password: admin##!
+  rule: admin
