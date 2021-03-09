@@ -1,0 +1,21 @@
+server:
+  port : 8082
+
+spring:
+
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3308/auth_service_dev_db
+    username: root
+    password: root
+
+  jpa:
+    hibernate.ddl-auto: update
+    generate-ddl: true
+    show-sql: true
+
+security:
+    jwt: 
+      token: 
+        secret-key: GWEFMlbWvVHYZw2qVNs946e7SWMaL9Ll
+        expire-timeout: 360000
