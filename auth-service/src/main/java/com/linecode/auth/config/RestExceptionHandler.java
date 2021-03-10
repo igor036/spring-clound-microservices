@@ -1,6 +1,7 @@
 package com.linecode.auth.config;
 
 import com.linecode.auth.exception.RestException;
+import com.linecode.auth.exception.UnprocessableEntityException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,13 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
     private static final String UNEXPECTED_ERROR_MESSAGE = "Unexpected internal error.";
+
+    @ExceptionHandler(UnprocessableEntityException.class)
+    protected ResponseEntity<Object> unprocessableEntityExceptionhandler(UnprocessableEntityException ex) {
+        return ResponseEntity
+            .unprocessableEntity()
+            .body(ex.getErrors());
+    }
 
     @ExceptionHandler(RestException.class)
     protected ResponseEntity<String> restExceptionHandler(RestException ex) {
