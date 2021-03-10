@@ -1,7 +1,12 @@
 server:
   port : 8082
+  servlet:
+    context-path: /auth-service
 
 spring:
+
+  application:
+    name: auth-service
 
   datasource:
     driverClassName: com.mysql.jdbc.Driver
@@ -19,6 +24,16 @@ security:
     token: 
       secret-key: GWEFMlbWvVHYZw2qVNs946e7SWMaL9Ll
       expire-timeout: 360000
+
+
+eureka:
+
+  instance: 
+    hostname: localhost
+ 
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/discovery-service/eureka/
 
 admin:
   username: admin
