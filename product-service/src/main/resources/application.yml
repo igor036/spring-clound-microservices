@@ -1,8 +1,13 @@
 server:
   port : 8080
+  servlet:
+    context-path: /product-service
 
 spring:
   
+  application:
+    name: product-service
+
   datasource:
     driverClassName: com.mysql.jdbc.Driver
     url: jdbc:mysql://127.0.0.1:3306/product_service_db
@@ -21,6 +26,15 @@ spring:
     password: mqadmin
 
 
+eureka:
+
+  instance: 
+    hostname: localhost
+ 
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/discovery-service/eureka/
+
 product:
   amqp:
     exchange: product.exchange
@@ -28,3 +42,4 @@ product:
         create: queue.create
         delete: queue.delete
         update: queue.update
+        
