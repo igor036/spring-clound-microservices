@@ -7,14 +7,13 @@ import static org.mockito.Mockito.when;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 import com.linecode.auth.dto.UserAuthenticationDto;
 import com.linecode.auth.entity.User;
 import com.linecode.auth.exception.RestException;
 import com.linecode.auth.exception.UnprocessableEntityException;
-import com.linecode.auth.factory.UserAuthenticationDtoFaker;
+import com.linecode.auth.factory.UserAuthenticationDtoFactory;
 import com.linecode.auth.repository.UserRepository;
 import com.linecode.auth.service.UserService;
 
@@ -30,7 +29,7 @@ import org.testng.annotations.Test;
 
 public class UserServiceUnitTest extends UnitTest {
 
-    private final UserAuthenticationDtoFaker factory = new UserAuthenticationDtoFaker();
+    private final UserAuthenticationDtoFactory factory = new UserAuthenticationDtoFactory();
 
     @InjectMocks
     private UserService userService;
