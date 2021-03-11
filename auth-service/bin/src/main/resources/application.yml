@@ -1,0 +1,41 @@
+server:
+  port : 8083
+  servlet:
+    context-path: /auth-service
+
+spring:
+
+  application:
+    name: auth-service
+
+  datasource:
+    driverClassName: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3308/auth_service_dev_db
+    username: root
+    password: root
+
+  jpa:
+    hibernate.ddl-auto: update
+    generate-ddl: true
+    show-sql: true
+
+security:
+  jwt: 
+    token: 
+      secret-key: GWEFMlbWvVHYZw2qVNs946e7SWMaL9Ll
+      expire-timeout: 360000
+
+
+eureka:
+
+  instance: 
+    hostname: localhost
+ 
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/discovery-service/eureka/
+
+admin:
+  username: admin
+  password: admin##!
+  rule: admin

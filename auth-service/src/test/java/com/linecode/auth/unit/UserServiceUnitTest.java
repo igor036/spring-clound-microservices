@@ -11,8 +11,8 @@ import java.util.Optional;
 
 import com.linecode.auth.dto.UserAuthenticationDto;
 import com.linecode.auth.entity.User;
-import com.linecode.auth.exception.RestException;
-import com.linecode.auth.exception.UnprocessableEntityException;
+import com.linecode.linecodeframework.exception.RestException;
+import com.linecode.linecodeframework.exception.UnprocessableEntityException;
 import com.linecode.auth.factory.UserAuthenticationDtoFactory;
 import com.linecode.auth.repository.UserRepository;
 import com.linecode.auth.service.UserService;

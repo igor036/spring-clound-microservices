@@ -1,9 +1,10 @@
 package com.linecode.auth.service;
 
-import com.linecode.auth.dto.UserAuthenticationDto;
 import com.linecode.auth.entity.User;
-import com.linecode.auth.exception.RestException;
+import com.linecode.auth.dto.UserAuthenticationDto;
 import com.linecode.auth.repository.UserRepository;
+
+import com.linecode.linecodeframework.exception.RestException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,8 +13,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import static com.linecode.auth.util.ValidatorUtil.assertNotNull;
-import static com.linecode.auth.util.ValidatorUtil.assertConstraints;
+import static com.linecode.linecodeframework.util.ValidatorUtil.assertNotNull;
+import static com.linecode.linecodeframework.util.ValidatorUtil.assertConstraints;
 
 @Service
 public class UserService {

@@ -3,15 +3,13 @@ package com.linecode.auth.config.jwt;
 import java.util.Date;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
 import com.linecode.auth.service.UserService;
+import com.linecode.linecodeframework.config.jwt.LinecodeJwtTokenService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -20,15 +18,9 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 
 @Service
-public class JwtTokenService {
+public class JwtTokenService  extends LinecodeJwtTokenService {
 
-    private static final String BEARER_PREFIX = "Bearer ";
-    private static final String CLAIMS_RULES_PROP = "rules";
-    private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final SignatureAlgorithm SIGNATURE_ALGORITHM = SignatureAlgorithm.HS256;
-    
-    @Value("${security.jwt.token.secret-key}")
-    private String secretKey;
 
     @Value("${security.jwt.token.expire-timeout}")
     private long expireTimeout;
@@ -36,17 +28,7 @@ public class JwtTokenService {
     @Autowired
     private UserService userService;
 
-    public String getToken(HttpServletRequest request) {
-        
-        var bearerToken = request.getHeader(AUTHORIZATION_HEADER);
-        
-        if (isBearerToken(bearerToken)) {
-            return bearerTokenResolver(bearerToken);
-        }
-
-        return null;
-    }
-
+    @Override
     public Authentication gAuthentication(String token) {
         
         if (!StringUtils.hasText(token)) return null;
@@ -54,7 +36,7 @@ public class JwtTokenService {
         var username = getUserName(token);
         var user     = userService.getByUsername(username);
 
-        return buildAuthentication(user);
+        return new UsernamePasswordAuthenticationToken(user, user.getPassword(), user.getAuthorities());
     }
 
     public String buildToken(String username, List<String> rules) {
@@ -78,10 +60,6 @@ public class JwtTokenService {
         return Jwts.claims().setSubject(username);
     }
 
-    private Authentication buildAuthentication(UserDetails user) {
-        return new UsernamePasswordAuthenticationToken(user, user.getPassword(), user.getAuthorities());
-    }
-
     private void setClaimsRules(Claims claims, List<String> rules) {
         claims.put(CLAIMS_RULES_PROP, rules);
     }
@@ -93,24 +71,5 @@ public class JwtTokenService {
 
         claims.setIssuedAt(createdAt);
         claims.setExpiration(expireAt);
-    }
-
-    private String getUserName(String token) {
-        //@formatter:off
-        return Jwts
-            .parser()
-            .setSigningKey(secretKey)
-            .parseClaimsJws(token)
-            .getBody()
-            .getSubject();
-        //@formatter:on
-    }
-
-    private boolean isBearerToken(String bearerToken) {
-        return StringUtils.hasText(bearerToken) && bearerToken.startsWith(BEARER_PREFIX);
-    }
-    
-    private String bearerTokenResolver(String bearerToken) {
-        return bearerToken.replace(BEARER_PREFIX, "").trim();
     }
 }
