@@ -1,0 +1,4 @@
+security:
+  jwt: 
+    token: 
+      secret-key: GWEFMlbWvVHYZw2qVNs946e7SWMaL9Ll
