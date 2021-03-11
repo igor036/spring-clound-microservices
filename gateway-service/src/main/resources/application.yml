@@ -1,0 +1,42 @@
+server:
+  port : 8080
+
+spring:
+  
+  application:
+    name: gateway-service
+
+eureka:
+
+  instance: 
+    hostname: localhost
+ 
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/discovery-service/eureka/
+
+
+zuul:
+
+  prefix: /api
+  ignored-services: "*"
+  
+  routes:
+
+    auth-service: 
+      path: /auth-service/**
+      service-id: auth-service
+      strip-prefix: false
+      custom-sensitive-headers: true
+
+    product-service: 
+      path: /product-service/**
+      service-id: product-service
+      strip-prefix: false
+      custom-sensitive-headers: true
+
+    payment-service: 
+      path: /payment-service/**
+      service-id: payment-service
+      strip-prefix: false
+      custom-sensitive-headers: true
