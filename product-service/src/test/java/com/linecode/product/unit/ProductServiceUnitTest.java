@@ -11,11 +11,12 @@ import java.util.Optional;
 import com.linecode.product.amqp.ProductProducer;
 import com.linecode.product.dto.ProductDto;
 import com.linecode.product.entity.Product;
-import com.linecode.product.exception.RestException;
-import com.linecode.product.exception.UnprocessableEntityException;
 import com.linecode.product.factory.ProductDtoFactory;
 import com.linecode.product.repository.ProductRepository;
 import com.linecode.product.service.ProductService;
+
+import com.linecode.linecodeframework.exception.RestException;
+import com.linecode.linecodeframework.exception.UnprocessableEntityException;
 
 import org.mockito.InjectMocks;
 import org.mockito.Mock;

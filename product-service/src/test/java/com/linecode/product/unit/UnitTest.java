@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 
-import com.linecode.product.exception.RestException;
-import com.linecode.product.exception.UnprocessableEntityException;
+import com.linecode.linecodeframework.exception.RestException;
+import com.linecode.linecodeframework.exception.UnprocessableEntityException;
 import org.springframework.http.HttpStatus;
 
 public abstract class UnitTest {

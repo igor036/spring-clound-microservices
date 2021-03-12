@@ -45,6 +45,11 @@
 			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
 		</dependency>
 
+		<dependency>
+			<groupId>com.linecode</groupId>
+			<artifactId>linecodeframework</artifactId>
+			<version>${project.version}</version>
+		</dependency>
 
 		<!-- lombok dependency's -->
 		<dependency>

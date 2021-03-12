@@ -3,8 +3,9 @@ package com.linecode.product.service;
 import com.linecode.product.amqp.ProductProducer;
 import com.linecode.product.dto.ProductDto;
 import com.linecode.product.entity.Product;
-import com.linecode.product.exception.RestException;
 import com.linecode.product.repository.ProductRepository;
+
+import com.linecode.linecodeframework.exception.RestException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -16,8 +17,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import static com.linecode.product.util.ValidatorUtil.assertConstraints;
-import static com.linecode.product.util.ValidatorUtil.assertNotNull;
+import static com.linecode.linecodeframework.util.ValidatorUtil.assertConstraints;
+import static com.linecode.linecodeframework.util.ValidatorUtil.assertNotNull;
 
 import java.util.Optional;
 

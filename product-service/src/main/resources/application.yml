@@ -5,6 +5,9 @@ server:
 
 spring:
   
+  profiles:
+    active: dev
+
   application:
     name: product-service
 
@@ -25,6 +28,10 @@ spring:
     username: mqadmin
     password: mqadmin
 
+security:
+  jwt: 
+    token: 
+      secret-key: GWEFMlbWvVHYZw2qVNs946e7SWMaL9Ll
 
 eureka:
 
