@@ -3,7 +3,7 @@ package com.linecode.payment.service;
 import com.linecode.payment.dto.ProductSaleDto;
 import com.linecode.payment.dto.SaleDto;
 import com.linecode.payment.entity.Sale;
-import com.linecode.payment.exception.RestException;
+import com.linecode.linecodeframework.exception.RestException;
 import com.linecode.payment.repository.ProductRepository;
 import com.linecode.payment.repository.SaleRepository;
 
@@ -18,8 +18,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-import static com.linecode.payment.util.ValidatorUtil.assertNotNull;
-import static com.linecode.payment.util.ValidatorUtil.assertConstraints;
+import static com.linecode.linecodeframework.util.ValidatorUtil.assertNotNull;
+import static com.linecode.linecodeframework.util.ValidatorUtil.assertConstraints;
 
 @Service
 public class SaleService {

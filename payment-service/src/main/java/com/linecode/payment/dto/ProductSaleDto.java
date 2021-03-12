@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.validation.constraints.Min;
 
 import com.linecode.payment.entity.ProductSale;
+import com.linecode.linecodeframework.dto.MapperToEntity;
 
 import org.modelmapper.ModelMapper;
 

@@ -10,6 +10,7 @@ import javax.persistence.Table;
 
 import com.linecode.payment.dto.ProductDto;
 import com.linecode.payment.util.DateUtil;
+import com.linecode.linecodeframework.entity.MapperToDto;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.annotation.LastModifiedDate;

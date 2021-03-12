@@ -9,6 +9,7 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 import com.linecode.payment.entity.Sale;
+import com.linecode.linecodeframework.dto.MapperToEntity;
 
 import org.modelmapper.ModelMapper;
 

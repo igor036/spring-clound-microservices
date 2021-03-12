@@ -1,10 +1,15 @@
 spring:
+
   datasource:
     driverClassName: org.h2.Driver
     url: jdbc:h2:mem:myDb;DB_CLOSE_DELAY=-1
     username: 
     password: 
+    
   jpa:
     hibernate.ddl-auto: update
     generate-ddl: true
     show-sql: true
+
+security:
+  ignored: /**
