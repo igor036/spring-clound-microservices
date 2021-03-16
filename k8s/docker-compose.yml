@@ -1,0 +1,42 @@
+version: '3'
+services:
+
+## Discovery Service
+  discovery_service_app:
+    build:
+      context: ./
+      dockerfile: ./discovery-service.dockerfile
+    image: discovery_service_app
+    container_name: discovery_service_app
+    ports: 
+      - "8761:8761"
+
+## Auth Service
+  #DB
+  auth_service_db:
+    environment:
+        - MYSQL_ROOT_PASSWORD=${AUTH_SERVICE_DB_PASSWORD}
+        - MYSQL_DATABASE=${AUTH_SERVICE_DB_NAME}
+    image: mysql:5.7
+    container_name: auth_service_db
+    ports:
+      - 3308:3306
+    volumes:
+      - ${AUTH_SERVICE_DB_PATH}:/var/lib/mysql
+
+  #APP
+  auth_service_app:
+    build:
+      context: ./
+      dockerfile: ./auth-service.dockerfile
+    image: auth_service_app
+    container_name: auth_service_app
+    ports: 
+      - "8083:8083"
+    depends_on:
+      - auth_service_db
+      - discovery_service_app
+    links:
+      - auth_service_db
+      - discovery_service_app
+
