@@ -10,9 +10,9 @@ spring:
 
   datasource:
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3308/auth_service_dev_db
-    username: root
-    password: root
+    url: ${DATABASE_URL:jdbc:mysql://127.0.0.1:3308/auth_service_dev_db}
+    username: ${DATABASE_UER:root}
+    password: ${DATABASE_PASSWORD:root}
 
   jpa:
     hibernate.ddl-auto: update
@@ -22,18 +22,20 @@ spring:
 security:
   jwt: 
     token: 
-      secret-key: GWEFMlbWvVHYZw2qVNs946e7SWMaL9Ll
+      secret-key: ${JWT_SECRET_KEY:linecode}
       expire-timeout: 360000
+
 
 
 eureka:
 
   instance: 
-    hostname: localhost
+    hostname: discovery_service_app
+    preferIpAddress: false
  
   client:
     service-url:
-      defaultZone: http://localhost:8761/discovery-service/eureka/
+      defaultZone: ${EUREKA_SERVER:http://127.0.0.1:8761/discovery-service/eureka/}
 
 admin:
   username: admin
