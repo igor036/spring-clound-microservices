@@ -32,6 +32,7 @@ services:
     links:
       - auth_service_app
       - product_service_app
+      - payment_service_app
     expose:
       - "8080"
     networks:
@@ -114,6 +115,48 @@ services:
     depends_on:
       - product_service_db
       - discovery_service_app
+      - rabbitmq
+    networks:
+      spring_cloud_net:
+
+## Payment Service
+  #DB
+  payment_service_db:
+    environment:
+      - MYSQL_ROOT_PASSWORD=${PAYMENT_SERVICE_DB_PASSWORD}
+      - MYSQL_DATABASE=${PAYMENT_SERVICE_DB_NAME}
+    image: mysql:5.7
+    container_name: payment_service_db
+    ports:
+      - ${PAYMENT_SERVICE_DB_PORT}:3306 
+    volumes:
+      - ${PAYMENT_SERVICE_DB_PATH}:/var/lib/mysql
+    expose:
+      - "3306"
+    networks:
+      spring_cloud_net:
+
+  #APP
+  payment_service_app:
+    build:
+      context: ./
+      dockerfile: ./payment-service.dockerfile
+    image: payment_service_app
+    container_name: payment_service_app
+    ports: 
+      - "8082:8082"
+    expose:
+      - "8082"
+    environment:
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - EUREKA_SERVER=http://172.28.1.1:8761/discovery-service/eureka/
+      - DATABASE_URL=jdbc:mysql://payment_service_db:3306/${PAYMENT_SERVICE_DB_NAME}
+      - DATABASE_UER=${PAYMENT_SERVICE_DB_USER}
+      - DATABASE_PASSWORD=${PAYMENT_SERVICE_DB_PASSWORD}
+    depends_on:
+      - payment_service_db
+      - discovery_service_app
+      - rabbitmq
     networks:
       spring_cloud_net:
 
