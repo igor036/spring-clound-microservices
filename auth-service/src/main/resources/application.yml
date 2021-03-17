@@ -26,13 +26,7 @@ security:
       expire-timeout: 360000
 
 
-
 eureka:
-
-  instance: 
-    hostname: discovery_service_app
-    preferIpAddress: false
- 
   client:
     service-url:
       defaultZone: ${EUREKA_SERVER:http://127.0.0.1:8761/discovery-service/eureka/}
