@@ -31,6 +31,7 @@ services:
       - EUREKA_SERVER=http://172.28.1.1:8761/discovery-service/eureka/
     links:
       - auth_service_app
+      - product_service_app
     expose:
       - "8080"
     networks:
@@ -72,6 +73,46 @@ services:
       - DATABASE_PASSWORD=${AUTH_SERVICE_DB_PASSWORD}
     depends_on:
       - auth_service_db
+      - discovery_service_app
+    networks:
+      spring_cloud_net:
+
+## Product Service
+  #DB
+  product_service_db:
+    environment:
+      - MYSQL_ROOT_PASSWORD=${PRODUCT_SERVICE_DB_PASSWORD}
+      - MYSQL_DATABASE=${PRODUCT_SERVICE_DB_NAME}
+    image: mysql:5.7
+    container_name: product_service_db
+    ports:
+      - ${PRODUCT_SERVICE_DB_PORT}:3306 
+    volumes:
+      - ${PRODUCT_SERVICE_DB_PATH}:/var/lib/mysql
+    expose:
+      - "3306"
+    networks:
+      spring_cloud_net:
+    
+  #APP
+  product_service_app:
+    build:
+      context: ./
+      dockerfile: ./product-service.dockerfile
+    image: product_service_app
+    container_name: product_service_app
+    ports: 
+      - "8081:8081"
+    expose:
+      - "8081"
+    environment:
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - EUREKA_SERVER=http://172.28.1.1:8761/discovery-service/eureka/
+      - DATABASE_URL=jdbc:mysql://product_service_db:3306/${PRODUCT_SERVICE_DB_NAME}
+      - DATABASE_UER=${PRODUCT_SERVICE_DB_USER}
+      - DATABASE_PASSWORD=${PRODUCT_SERVICE_DB_PASSWORD}
+    depends_on:
+      - product_service_db
       - discovery_service_app
     networks:
       spring_cloud_net:
