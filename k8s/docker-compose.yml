@@ -1,6 +1,24 @@
 version: '3'
 services:
 
+#rabbitMQ
+  rabbitmq:
+    image: rabbitmq:3.8.3-management
+    ports:
+      - "${RABBITMQ_PORT}:5672"
+      - "${RABBITMQ_MANAGEMENT_PORT}:15672"
+    volumes:
+     - ${RABBITMQ_PATH}:/var/lib/rabbitmq
+    expose:
+     - "5672"
+    environment:
+     - RABBITMQ_ERLANG_COOKIE=${RABBITMQ_ERLANG_COOKIE}
+     - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER}
+     - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS}
+    networks:
+      spring_cloud_net:
+        ipv4_address: 172.28.1.2
+
 ## Discovery Service
   discovery_service_app:
     build:
@@ -112,6 +130,10 @@ services:
       - DATABASE_URL=jdbc:mysql://product_service_db:3306/${PRODUCT_SERVICE_DB_NAME}
       - DATABASE_UER=${PRODUCT_SERVICE_DB_USER}
       - DATABASE_PASSWORD=${PRODUCT_SERVICE_DB_PASSWORD}
+      - RABBITMQ_HOST=172.28.1.2
+      - RABBITMQ_USERNAME=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_PASSWORD=${RABBITMQ_DEFAULT_PASS}
+
     depends_on:
       - product_service_db
       - discovery_service_app
@@ -153,8 +175,11 @@ services:
       - DATABASE_URL=jdbc:mysql://payment_service_db:3306/${PAYMENT_SERVICE_DB_NAME}
       - DATABASE_UER=${PAYMENT_SERVICE_DB_USER}
       - DATABASE_PASSWORD=${PAYMENT_SERVICE_DB_PASSWORD}
+      - RABBITMQ_HOST=172.28.1.2
+      - RABBITMQ_USERNAME=${RABBITMQ_DEFAULT_USER}
+      - RABBITMQ_PASSWORD=${RABBITMQ_DEFAULT_PASS}
     depends_on:
-      - payment_service_db
+      - product_service_db
       - discovery_service_app
       - rabbitmq
     networks:

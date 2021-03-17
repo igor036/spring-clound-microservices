@@ -23,10 +23,10 @@ spring:
     show-sql: true
 
   rabbitmq:
-    host: 127.0.0.1
-    port: 5672
-    username: mqadmin
-    password: mqadmin
+    host: ${RABBITMQ_HOST:127.0.0.1}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:mqadmin}
+    password: ${RABBITMQ_PASSWORD:mqadmin}
 
 security:
   jwt: 

@@ -13,35 +13,30 @@ spring:
 
   datasource:
     driverClassName: com.mysql.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3307/payment_service_dev_db
-    username: root
-    password: root
+    url: ${DATABASE_URL:jdbc:mysql://127.0.0.1:3308/payment_service_db}
+    username: ${DATABASE_UER:root}
+    password: ${DATABASE_PASSWORD:root}
 
   jpa:
     hibernate.ddl-auto: update
     generate-ddl: true
     show-sql: true
 
-
   rabbitmq:
-    host: 127.0.0.1
-    port: 5672
-    username: mqadmin
-    password: mqadmin
+    host: ${RABBITMQ_HOST:127.0.0.1}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:mqadmin}
+    password: ${RABBITMQ_PASSWORD:mqadmin}
 
 security:
   jwt: 
     token: 
-      secret-key: GWEFMlbWvVHYZw2qVNs946e7SWMaL9Ll
+      secret-key: ${JWT_SECRET_KEY:linecode}
 
 eureka:
-
-  instance: 
-    hostname: localhost
- 
   client:
     service-url:
-      defaultZone: http://localhost:8761/discovery-service/eureka/
+      defaultZone: ${EUREKA_SERVER:http://127.0.0.1:8761/discovery-service/eureka/}
 
 product:
   amqp:
