@@ -36,4 +36,4 @@ build/
 .vscode/
 
 
-k8s/**.jar
+docker/**.jar
