@@ -27,6 +27,9 @@ security:
 
 
 eureka:
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${random.value}
   client:
     service-url:
       defaultZone: ${EUREKA_SERVER:http://127.0.0.1:8761/discovery-service/eureka/}
