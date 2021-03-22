@@ -1,0 +1,188 @@
+version: '3'
+services:
+
+#rabbitMQ
+  rabbit-queue:
+    image: rabbitmq:3.8.3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    expose:
+     - "5672"
+     - "15672"
+    environment:
+     - RABBITMQ_ERLANG_COOKIE=rabbitmq_secret
+     - RABBITMQ_DEFAULT_USER=mqadmin
+     - RABBITMQ_DEFAULT_PASS=mqadmin
+    restart: always
+
+#discovery service
+  discovery-service-app:
+    build:
+      context: ./
+      dockerfile: ./discovery-service.dockerfile
+    image: discovery-service-app
+    container_name: discovery-service-app
+    ports: 
+      - 8761:8761
+    expose:
+      - "8761"
+    restart: always
+    labels:
+      kompose.image-pull-policy: "Never"
+
+## Gateway Service
+  gateway-service-app:
+    build:
+      context: ./
+      dockerfile: ./gateway-service.dockerfile
+    image: gateway-service-app
+    container_name: gateway-service-app
+    ports: 
+      - 8080:8080
+    environment:
+      - EUREKA_SERVER=http://discovery-service-app:8761/eureka/
+    expose:
+      - "8080"
+    links:
+      - discovery-service-app
+      - auth-service-app
+      - product-service-app
+      - payment-service-app
+    restart: always
+    labels:
+      kompose.image-pull-policy: "Never"
+      
+## Auth Service
+  #DB
+  auth-service-db:
+    environment:
+        - MYSQL_ROOT_PASSWORD=root
+        - MYSQL_DATABASE=auth_service_db
+    image: mysql:5.7
+    container_name: auth-service-db
+    #ports:
+    #  - 3308:3306
+    expose:
+      - "3306"
+    restart: always
+
+  #APP
+  auth-service-app:
+    build:
+      context: ./
+      dockerfile: ./auth-service.dockerfile
+    image: auth-service-app
+    container_name: auth-service-appdocker
+    ports: 
+      - "8083:8083"
+    expose:
+      - "8083"
+    restart: always
+    environment:
+      - JWT_SECRET_KEY=GWEFMlbWvVHYZw2qVNs946e7SWMaL9Ll
+      - EUREKA_SERVER=http://discovery-service-app:8761/eureka/
+      - DATABASE_URL=jdbc:mysql://auth-service-db:3306/auth_service_db
+      - DATABASE_UER=root
+      - DATABASE_PASSWORD=root
+    depends_on:
+      - auth-service-db
+      - discovery-service-app
+    links:
+      - auth-service-db
+      - discovery-service-app
+    restart: always
+    labels:
+      kompose.image-pull-policy: "Never"
+
+## Product Service
+  #DB
+  product-service-db:
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=product_service_db
+    image: mysql:5.7
+    container_name: product-service-db
+    #ports:
+    #  - 3306:3306 
+    expose:
+      - "3306"
+    restart: always
+    
+  #APP
+  product-service-app:
+    build:
+      context: ./
+      dockerfile: ./product-service.dockerfile
+    image: product-service-app
+    container_name: product-service-app
+    ports: 
+      - "8081:8081"
+    expose:
+      - "8081"
+    environment:
+      - JWT_SECRET_KEY=GWEFMlbWvVHYZw2qVNs946e7SWMaL9Ll
+      - EUREKA_SERVER=http://discovery-service-app:8761/eureka/
+      - DATABASE_URL=jdbc:mysql://product-service-db:3306/product_service_db
+      - DATABASE_UER=root
+      - DATABASE_PASSWORD=root
+      - RABBITMQ_HOST=rabbit-queue
+      - RABBITMQ_USERNAME=mqadmin
+      - RABBITMQ_PASSWORD=mqadmin
+    depends_on:
+      - product-service-db
+      - discovery-service-app
+      - rabbit-queue
+    links:
+      - product-service-db
+      - discovery-service-app
+      - rabbit-queue
+    restart: always
+    labels:
+      kompose.image-pull-policy: "Never"
+
+## Payment Service
+  #DB
+  payment-service-db:
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=payment_service_db
+    image: mysql:5.7
+    container_name: payment-service-db
+    #ports:
+    #  - 3307:3306 
+    expose:
+      - "3306"
+    restart: always
+
+  #APP
+  payment-service-app:
+    build:
+      context: ./
+      dockerfile: ./payment-service.dockerfile
+    image: payment-service-app
+    container_name: payment-service-app
+    ports: 
+      - "8082:8082"
+    expose:
+      - "8082"
+    environment:
+      - JWT_SECRET_KEY=GWEFMlbWvVHYZw2qVNs946e7SWMaL9Ll
+      - EUREKA_SERVER=http://discovery-service-app:8761/eureka/
+      - DATABASE_URL=jdbc:mysql://payment-service-db:3306/payment_service_db
+      - DATABASE_UER=root
+      - DATABASE_PASSWORD=root
+      - RABBITMQ_HOST=rabbit-queue
+      - RABBITMQ_USERNAME=mqadmin
+      - RABBITMQ_PASSWORD=mqadmin
+    depends_on:
+      - product-service-db
+      - discovery-service-app
+      - rabbit-queue
+    links:
+      - product-service-db
+      - discovery-service-app
+      - rabbit-queue
+    restart: always
+    labels:
+      kompose.image-pull-policy: "Never"
