@@ -1,0 +1,567 @@
+apiVersion: v1
+items:
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f ./docker/docker-compose.yml -o ./k8s/kube.yaml
+        kompose.image-pull-policy: Never
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: auth-service-app
+      name: auth-service-app
+    spec:
+      ports:
+        - name: "8083"
+          port: 8083
+          targetPort: 8083
+      selector:
+        io.kompose.service: auth-service-app
+    status:
+      loadBalancer: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f ./docker/docker-compose.yml -o ./k8s/kube.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: auth-service-db
+      name: auth-service-db
+    spec:
+      ports:
+        - name: "3306"
+          port: 3306
+          targetPort: 3306
+      selector:
+        io.kompose.service: auth-service-db
+    status:
+      loadBalancer: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f ./docker/docker-compose.yml -o ./k8s/kube.yaml
+        kompose.image-pull-policy: Never
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: discovery-service-app
+      name: discovery-service-app
+    spec:
+      ports:
+        - name: "8761"
+          port: 8761
+          targetPort: 8761
+      selector:
+        io.kompose.service: discovery-service-app
+    status:
+      loadBalancer: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f ./docker/docker-compose.yml -o ./k8s/kube.yaml
+        kompose.image-pull-policy: Never
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: gateway-service-app
+      name: gateway-service-app
+    spec:
+      ports:
+        - name: "8080"
+          port: 8080
+          targetPort: 8080
+      selector:
+        io.kompose.service: gateway-service-app
+    status:
+      loadBalancer: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f ./docker/docker-compose.yml -o ./k8s/kube.yaml
+        kompose.image-pull-policy: Never
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: payment-service-app
+      name: payment-service-app
+    spec:
+      ports:
+        - name: "8082"
+          port: 8082
+          targetPort: 8082
+      selector:
+        io.kompose.service: payment-service-app
+    status:
+      loadBalancer: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f ./docker/docker-compose.yml -o ./k8s/kube.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: payment-service-db
+      name: payment-service-db
+    spec:
+      ports:
+        - name: "3306"
+          port: 3306
+          targetPort: 3306
+      selector:
+        io.kompose.service: payment-service-db
+    status:
+      loadBalancer: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f ./docker/docker-compose.yml -o ./k8s/kube.yaml
+        kompose.image-pull-policy: Never
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: product-service-app
+      name: product-service-app
+    spec:
+      ports:
+        - name: "8081"
+          port: 8081
+          targetPort: 8081
+      selector:
+        io.kompose.service: product-service-app
+    status:
+      loadBalancer: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f ./docker/docker-compose.yml -o ./k8s/kube.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: product-service-db
+      name: product-service-db
+    spec:
+      ports:
+        - name: "3306"
+          port: 3306
+          targetPort: 3306
+      selector:
+        io.kompose.service: product-service-db
+    status:
+      loadBalancer: {}
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f ./docker/docker-compose.yml -o ./k8s/kube.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: rabbit-queue
+      name: rabbit-queue
+    spec:
+      ports:
+        - name: "5672"
+          port: 5672
+          targetPort: 5672
+        - name: "15672"
+          port: 15672
+          targetPort: 15672
+      selector:
+        io.kompose.service: rabbit-queue
+    status:
+      loadBalancer: {}
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f ./docker/docker-compose.yml -o ./k8s/kube.yaml
+        kompose.image-pull-policy: Never
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: auth-service-app
+      name: auth-service-app
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: auth-service-app
+      strategy: {}
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f ./docker/docker-compose.yml -o ./k8s/kube.yaml
+            kompose.image-pull-policy: Never
+            kompose.version: 1.22.0 (955b78124)
+          creationTimestamp: null
+          labels:
+            io.kompose.service: auth-service-app
+        spec:
+          containers:
+            - env:
+                - name: DATABASE_PASSWORD
+                  value: root
+                - name: DATABASE_UER
+                  value: root
+                - name: DATABASE_URL
+                  value: jdbc:mysql://auth-service-db:3306/auth_service_db
+                - name: EUREKA_SERVER
+                  value: http://discovery-service-app:8761/eureka/
+                - name: JWT_SECRET_KEY
+                  value: GWEFMlbWvVHYZw2qVNs946e7SWMaL9Ll
+              image: auth-service-app
+              imagePullPolicy: Never
+              name: auth-service-appdocker
+              ports:
+                - containerPort: 8083
+              resources: {}
+          restartPolicy: Always
+    status: {}
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f ./docker/docker-compose.yml -o ./k8s/kube.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: auth-service-db
+      name: auth-service-db
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: auth-service-db
+      strategy: {}
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f ./docker/docker-compose.yml -o ./k8s/kube.yaml
+            kompose.version: 1.22.0 (955b78124)
+          creationTimestamp: null
+          labels:
+            io.kompose.service: auth-service-db
+        spec:
+          containers:
+            - env:
+                - name: MYSQL_DATABASE
+                  value: auth_service_db
+                - name: MYSQL_ROOT_PASSWORD
+                  value: root
+              image: mysql:5.7
+              name: auth-service-db
+              ports:
+                - containerPort: 3306
+              resources: {}
+          restartPolicy: Always
+    status: {}
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f ./docker/docker-compose.yml -o ./k8s/kube.yaml
+        kompose.image-pull-policy: Never
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: discovery-service-app
+      name: discovery-service-app
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: discovery-service-app
+      strategy: {}
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f ./docker/docker-compose.yml -o ./k8s/kube.yaml
+            kompose.image-pull-policy: Never
+            kompose.version: 1.22.0 (955b78124)
+          creationTimestamp: null
+          labels:
+            io.kompose.service: discovery-service-app
+        spec:
+          containers:
+            - image: discovery-service-app
+              imagePullPolicy: Never
+              name: discovery-service-app
+              ports:
+                - containerPort: 8761
+              resources: {}
+          restartPolicy: Always
+    status: {}
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f ./docker/docker-compose.yml -o ./k8s/kube.yaml
+        kompose.image-pull-policy: Never
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: gateway-service-app
+      name: gateway-service-app
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: gateway-service-app
+      strategy: {}
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f ./docker/docker-compose.yml -o ./k8s/kube.yaml
+            kompose.image-pull-policy: Never
+            kompose.version: 1.22.0 (955b78124)
+          creationTimestamp: null
+          labels:
+            io.kompose.service: gateway-service-app
+        spec:
+          containers:
+            - env:
+                - name: EUREKA_SERVER
+                  value: http://discovery-service-app:8761/eureka/
+              image: gateway-service-app
+              imagePullPolicy: Never
+              name: gateway-service-app
+              ports:
+                - containerPort: 8080
+              resources: {}
+          restartPolicy: Always
+    status: {}
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f ./docker/docker-compose.yml -o ./k8s/kube.yaml
+        kompose.image-pull-policy: Never
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: payment-service-app
+      name: payment-service-app
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: payment-service-app
+      strategy: {}
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f ./docker/docker-compose.yml -o ./k8s/kube.yaml
+            kompose.image-pull-policy: Never
+            kompose.version: 1.22.0 (955b78124)
+          creationTimestamp: null
+          labels:
+            io.kompose.service: payment-service-app
+        spec:
+          containers:
+            - env:
+                - name: DATABASE_PASSWORD
+                  value: root
+                - name: DATABASE_UER
+                  value: root
+                - name: DATABASE_URL
+                  value: jdbc:mysql://payment-service-db:3306/payment_service_db
+                - name: EUREKA_SERVER
+                  value: http://discovery-service-app:8761/eureka/
+                - name: JWT_SECRET_KEY
+                  value: GWEFMlbWvVHYZw2qVNs946e7SWMaL9Ll
+                - name: RABBITMQ_HOST
+                  value: rabbit-queue
+                - name: RABBITMQ_PASSWORD
+                  value: mqadmin
+                - name: RABBITMQ_USERNAME
+                  value: mqadmin
+              image: payment-service-app
+              imagePullPolicy: Never
+              name: payment-service-app
+              ports:
+                - containerPort: 8082
+              resources: {}
+          restartPolicy: Always
+    status: {}
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f ./docker/docker-compose.yml -o ./k8s/kube.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: payment-service-db
+      name: payment-service-db
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: payment-service-db
+      strategy: {}
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f ./docker/docker-compose.yml -o ./k8s/kube.yaml
+            kompose.version: 1.22.0 (955b78124)
+          creationTimestamp: null
+          labels:
+            io.kompose.service: payment-service-db
+        spec:
+          containers:
+            - env:
+                - name: MYSQL_DATABASE
+                  value: payment_service_db
+                - name: MYSQL_ROOT_PASSWORD
+                  value: root
+              image: mysql:5.7
+              name: payment-service-db
+              ports:
+                - containerPort: 3306
+              resources: {}
+          restartPolicy: Always
+    status: {}
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f ./docker/docker-compose.yml -o ./k8s/kube.yaml
+        kompose.image-pull-policy: Never
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: product-service-app
+      name: product-service-app
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: product-service-app
+      strategy: {}
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f ./docker/docker-compose.yml -o ./k8s/kube.yaml
+            kompose.image-pull-policy: Never
+            kompose.version: 1.22.0 (955b78124)
+          creationTimestamp: null
+          labels:
+            io.kompose.service: product-service-app
+        spec:
+          containers:
+            - env:
+                - name: DATABASE_PASSWORD
+                  value: root
+                - name: DATABASE_UER
+                  value: root
+                - name: DATABASE_URL
+                  value: jdbc:mysql://product-service-db:3306/product_service_db
+                - name: EUREKA_SERVER
+                  value: http://discovery-service-app:8761/eureka/
+                - name: JWT_SECRET_KEY
+                  value: GWEFMlbWvVHYZw2qVNs946e7SWMaL9Ll
+                - name: RABBITMQ_HOST
+                  value: rabbit-queue
+                - name: RABBITMQ_PASSWORD
+                  value: mqadmin
+                - name: RABBITMQ_USERNAME
+                  value: mqadmin
+              image: product-service-app
+              imagePullPolicy: Never
+              name: product-service-app
+              ports:
+                - containerPort: 8081
+              resources: {}
+          restartPolicy: Always
+    status: {}
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f ./docker/docker-compose.yml -o ./k8s/kube.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: product-service-db
+      name: product-service-db
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: product-service-db
+      strategy: {}
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f ./docker/docker-compose.yml -o ./k8s/kube.yaml
+            kompose.version: 1.22.0 (955b78124)
+          creationTimestamp: null
+          labels:
+            io.kompose.service: product-service-db
+        spec:
+          containers:
+            - env:
+                - name: MYSQL_DATABASE
+                  value: product_service_db
+                - name: MYSQL_ROOT_PASSWORD
+                  value: root
+              image: mysql:5.7
+              name: product-service-db
+              ports:
+                - containerPort: 3306
+              resources: {}
+          restartPolicy: Always
+    status: {}
+  - apiVersion: apps/v1
+    kind: Deployment
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f ./docker/docker-compose.yml -o ./k8s/kube.yaml
+        kompose.version: 1.22.0 (955b78124)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: rabbit-queue
+      name: rabbit-queue
+    spec:
+      replicas: 1
+      selector:
+        matchLabels:
+          io.kompose.service: rabbit-queue
+      strategy: {}
+      template:
+        metadata:
+          annotations:
+            kompose.cmd: kompose convert -f ./docker/docker-compose.yml -o ./k8s/kube.yaml
+            kompose.version: 1.22.0 (955b78124)
+          creationTimestamp: null
+          labels:
+            io.kompose.service: rabbit-queue
+        spec:
+          containers:
+            - env:
+                - name: RABBITMQ_DEFAULT_PASS
+                  value: mqadmin
+                - name: RABBITMQ_DEFAULT_USER
+                  value: mqadmin
+                - name: RABBITMQ_ERLANG_COOKIE
+                  value: rabbitmq_secret
+              image: rabbitmq:3.8.3-management
+              name: rabbit-queue
+              ports:
+                - containerPort: 5672
+                - containerPort: 15672
+              resources: {}
+          restartPolicy: Always
+    status: {}
+kind: List
+metadata: {}
+
